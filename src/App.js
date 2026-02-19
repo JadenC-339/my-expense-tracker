@@ -80,6 +80,28 @@ export default function App() {
   const [budgetAmount, setBudgetAmount] = useState("");
   const [sortBy, setSortBy] = useState("date-desc");
   const [hoveredCardId, setHoveredCardId] = useState(null);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [showCursor, setShowCursor] = useState(true);
+
+  // Cursor animation - track mouse movement
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+      setShowCursor(true);
+    };
+
+    const handleMouseLeave = () => {
+      setShowCursor(false);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
 
   // Save to localStorage when transactions change
   useEffect(() => {
@@ -357,9 +379,47 @@ export default function App() {
         ))}
       </nav>
 
+      {/* Custom Cursor */}
+      {showCursor && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              left: `${cursorPos.x}px`,
+              top: `${cursorPos.y}px`,
+              width: "20px",
+              height: "20px",
+              background: "radial-gradient(circle, rgba(77, 255, 164, 0.8) 0%, rgba(77, 255, 164, 0.2) 100%)",
+              borderRadius: "50%",
+              border: "2px solid #4dffa4",
+              pointerEvents: "none",
+              transform: "translate(-50%, -50%)",
+              zIndex: 9999,
+              boxShadow: "0 0 12px rgba(77, 255, 164, 0.6), inset 0 0 8px rgba(77, 255, 164, 0.3)",
+            }}
+            className="cursor-dot"
+          />
+          <div
+            style={{
+              position: "fixed",
+              left: `${cursorPos.x}px`,
+              top: `${cursorPos.y}px`,
+              width: "40px",
+              height: "40px",
+              border: "2px solid rgba(77, 255, 164, 0.4)",
+              borderRadius: "50%",
+              pointerEvents: "none",
+              transform: "translate(-50%, -50%)",
+              zIndex: 9998,
+            }}
+            className="cursor-ring"
+          />
+        </>
+      )}
+
       {/* Dashboard Tab */}
       {activeTab === "dashboard" && (
-        <div style={styles.container}>
+        <div style={styles.container} className="tab-content fade-in">
           {/* Summary Cards */}
           <div style={styles.summaryGrid}>
             <div style={{ ...styles.card, ...styles.cardBalance }}>
@@ -457,7 +517,7 @@ export default function App() {
 
       {/* Form Tab */}
       {activeTab === "form" && (
-        <div style={styles.container}>
+        <div style={styles.container} className="tab-content fade-in">
           <div style={styles.formCard}>
             <h2 style={styles.formTitle}>{editingId ? "Edit Transaction" : "Add New Transaction"}</h2>
             {error && <div style={styles.error}>{error}</div>}
@@ -571,7 +631,7 @@ export default function App() {
 
       {/* Transactions Tab */}
       {activeTab === "transactions" && (
-        <div style={styles.container}>
+        <div style={styles.container} className="tab-content fade-in">
           {/* Filters */}
           <div style={styles.filterCard}>
             <h2 style={styles.sectionTitle}>Filters & Search</h2>
@@ -725,7 +785,7 @@ export default function App() {
 
       {/* Analytics Tab */}
       {activeTab === "analytics" && (
-        <div style={styles.container}>
+        <div style={styles.container} className="tab-content fade-in">
           <div style={styles.analyticsGrid}>
             <div style={styles.analyticsCard}>
               <h3 style={styles.analyticsTitle}>Monthly Overview</h3>
@@ -814,7 +874,7 @@ export default function App() {
 
       {/* Budgets Tab */}
       {activeTab === "budgets" && (
-        <div style={styles.container}>
+        <div style={styles.container} className="tab-content fade-in">
           <div style={styles.budgetPageCard}>
             <div style={styles.budgetPageHeader}>
               <h2 style={styles.sectionTitle}>Budget Management</h2>
@@ -1019,6 +1079,7 @@ const styles = {
     transition: "all 0.3s cubic-bezier(0.22,1,0.36,1)",
     fontFamily: "inherit",
     position: "relative",
+    overflow: "hidden",
   },
   navBtnActive: {
     color: "#4dffa4",
@@ -1558,7 +1619,7 @@ const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap');
   
   * { box-sizing: border-box; }
-  body { margin: 0; padding: 0; scroll-behavior: smooth; }
+  body { margin: 0; padding: 0; scroll-behavior: smooth; cursor: none; }
   
   /* ═══ FALLING CASH ANIMATION ═══ */
   @keyframes fallCash {
@@ -1861,6 +1922,71 @@ const css = `
   /* Progress bar animation */
   div[style*="background: #4dffa4"][style*="height: 100%"] {
     animation: progressFill 0.8s ease-out;
+  }
+  
+  /* ═══ CURSOR ANIMATION ═══ */
+  .cursor-dot {
+    animation: cursorPulse 2s ease-in-out infinite;
+  }
+  
+  .cursor-ring {
+    animation: cursorRing 3s linear infinite;
+  }
+  
+  @keyframes cursorPulse {
+    0%, 100% {
+      box-shadow: 0 0 12px rgba(77, 255, 164, 0.6), inset 0 0 8px rgba(77, 255, 164, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(77, 255, 164, 0.8), inset 0 0 12px rgba(77, 255, 164, 0.5);
+    }
+  }
+  
+  @keyframes cursorRing {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.6;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1.8);
+      opacity: 0;
+    }
+  }
+  
+  /* ═══ TAB FADE ANIMATION ═══ */
+  @keyframes fadeInTab {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .tab-content {
+    animation: fadeInTab 0.4s cubic-bezier(0.22,1,0.36,1) forwards;
+  }
+  
+  /* Enhanced tab button hover effects */
+  .nav-btn:hover {
+    text-shadow: 0 0 12px rgba(77, 255, 164, 0.4);
+  }
+  
+  .nav-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #4dffa4, transparent);
+    transition: width 0.3s cubic-bezier(0.22,1,0.36,1);
+  }
+  
+  .nav-btn:hover::after {
+    width: 100%;
   }
 `;
 
