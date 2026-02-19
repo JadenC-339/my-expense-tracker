@@ -301,6 +301,24 @@ export default function App() {
     <div style={styles.root}>
       <style>{css}</style>
 
+      {/* Falling Cash Animation */}
+      <div style={styles.cashContainer}>
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              ...styles.fallingCash,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${i * 0.15}s`,
+              animationDuration: `${8 + Math.random() * 4}s`,
+              opacity: 0.15 + Math.random() * 0.2,
+            }}
+          >
+            💵
+          </div>
+        ))}
+      </div>
+
       {/* Header */}
       <header style={styles.header}>
         <div style={styles.headerContent}>
@@ -906,11 +924,33 @@ const styles = {
     color: "#e8e6e1",
     fontFamily: "'DM Mono', 'Fira Mono', monospace",
     paddingBottom: 64,
+    position: "relative",
+    overflow: "hidden",
+  },
+  cashContainer: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    pointerEvents: "none",
+    zIndex: 0,
+    overflow: "hidden",
+  },
+  fallingCash: {
+    position: "absolute",
+    fontSize: 32,
+    top: "-50px",
+    animation: "fallCash linear infinite",
+    textShadow: "0 0 10px rgba(76, 175, 80, 0.5)",
+    transform: "rotate(0deg)",
   },
   container: {
     maxWidth: 1200,
     margin: "0 auto",
     padding: "32px 24px",
+    position: "relative",
+    zIndex: 1,
   },
   header: {
     background: "linear-gradient(135deg, #1a1d26 0%, #141720 100%)",
@@ -971,6 +1011,8 @@ const styles = {
     gap: 0,
     overflowX: "auto",
     padding: "0 24px",
+    position: "relative",
+    zIndex: 50,
   },
   navBtn: {
     flex: "1 0 auto",
@@ -1525,6 +1567,24 @@ const css = `
   
   * { box-sizing: border-box; }
   body { margin: 0; padding: 0; scroll-behavior: smooth; }
+  
+  /* ═══ FALLING CASH ANIMATION ═══ */
+  @keyframes fallCash {
+    0% {
+      transform: translateY(0) rotateZ(0deg);
+      opacity: 0;
+    }
+    5% {
+      opacity: 0.15;
+    }
+    90% {
+      opacity: 0.15;
+    }
+    100% {
+      transform: translateY(100vh) rotateZ(360deg);
+      opacity: 0;
+    }
+  }
   
   /* Smooth input animations */
   .flow-input {
