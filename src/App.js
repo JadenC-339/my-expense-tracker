@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // Category Icons/Emojis
 const CATEGORY_ICONS = {
@@ -80,14 +80,40 @@ export default function App() {
   const [budgetAmount, setBudgetAmount] = useState("");
   const [sortBy, setSortBy] = useState("date-desc");
   const [hoveredCardId, setHoveredCardId] = useState(null);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [showCursor, setShowCursor] = useState(true);
 
-  // Cursor animation - track mouse movement
+  // Cursor refs - use refs instead of state to avoid re-renders
+  const cursorDotRef = useRef(null);
+  const cursorRingRef = useRef(null);
+  const animationFrameRef = useRef(null);
+
+  // Cursor animation - track mouse movement without state updates
   useEffect(() => {
+    let lastX = 0;
+    let lastY = 0;
+
     const handleMouseMove = (e) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
-      setShowCursor(true);
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      // Cancel previous animation frame if it exists
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+
+      // Use requestAnimationFrame for smooth updates without re-renders
+      animationFrameRef.current = requestAnimationFrame(() => {
+        if (cursorDotRef.current) {
+          cursorDotRef.current.style.left = lastX + "px";
+          cursorDotRef.current.style.top = lastY + "px";
+        }
+        if (cursorRingRef.current) {
+          cursorRingRef.current.style.left = lastX + "px";
+          cursorRingRef.current.style.top = lastY + "px";
+        }
+      });
+
+      if (!showCursor) setShowCursor(true);
     };
 
     const handleMouseLeave = () => {
@@ -100,8 +126,11 @@ export default function App() {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
-  }, []);
+  }, [showCursor]);
 
   // Save to localStorage when transactions change
   useEffect(() => {
@@ -383,10 +412,9 @@ export default function App() {
       {showCursor && (
         <>
           <div
+            ref={cursorDotRef}
             style={{
               position: "fixed",
-              left: `${cursorPos.x}px`,
-              top: `${cursorPos.y}px`,
               width: "20px",
               height: "20px",
               background: "radial-gradient(circle, rgba(77, 255, 164, 0.8) 0%, rgba(77, 255, 164, 0.2) 100%)",
@@ -400,10 +428,9 @@ export default function App() {
             className="cursor-dot"
           />
           <div
+            ref={cursorRingRef}
             style={{
               position: "fixed",
-              left: `${cursorPos.x}px`,
-              top: `${cursorPos.y}px`,
               width: "40px",
               height: "40px",
               border: "2px solid rgba(77, 255, 164, 0.4)",
