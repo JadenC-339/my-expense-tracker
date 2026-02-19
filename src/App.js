@@ -50,6 +50,33 @@ export default function App() {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const handleDownloadCSV = () => {
+    const headers = ["Description", "Amount", "Type", "Date"];
+    const rows = transactions.map((t) => [
+      t.description,
+      t.amount,
+      t.type === "income" ? "Income" : "Expense",
+      new Date(t.id).toLocaleDateString(),
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) =>
+        row.map((cell) => `"${cell}"`).join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `expenses_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const fmt = (n) =>
     n.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
@@ -128,6 +155,15 @@ export default function App() {
 
           <button style={styles.addBtn} className="flow-btn" onClick={handleAdd}>
             + Add Transaction
+          </button>
+
+          <button 
+            style={styles.downloadBtn} 
+            className="flow-btn" 
+            onClick={handleDownloadCSV}
+            disabled={transactions.length === 0}
+          >
+            ↓ Download CSV
           </button>
         </div>
 
