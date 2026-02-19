@@ -303,15 +303,15 @@ export default function App() {
 
       {/* Falling Cash Animation */}
       <div style={styles.cashContainer}>
-        {[...Array(15)].map((_, i) => (
+        {[...Array(20)].map((_, i) => (
           <div
             key={i}
+            className="falling-cash"
             style={{
-              ...styles.fallingCash,
               left: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.15}s`,
-              animationDuration: `${8 + Math.random() * 4}s`,
-              opacity: 0.15 + Math.random() * 0.2,
+              animationDelay: `${i * 0.2}s`,
+              animationDuration: `${10 + Math.random() * 5}s`,
+              opacity: 0.1 + Math.random() * 0.15,
             }}
           >
             💵
@@ -936,14 +936,6 @@ const styles = {
     pointerEvents: "none",
     zIndex: 0,
     overflow: "hidden",
-  },
-  fallingCash: {
-    position: "absolute",
-    fontSize: 32,
-    top: "-50px",
-    animation: "fallCash linear infinite",
-    textShadow: "0 0 10px rgba(76, 175, 80, 0.5)",
-    transform: "rotate(0deg)",
   },
   container: {
     maxWidth: 1200,
@@ -1571,19 +1563,30 @@ const css = `
   /* ═══ FALLING CASH ANIMATION ═══ */
   @keyframes fallCash {
     0% {
-      transform: translateY(0) rotateZ(0deg);
+      transform: translateY(-100px) rotateZ(0deg);
       opacity: 0;
     }
-    5% {
-      opacity: 0.15;
+    2% {
+      opacity: 1;
     }
-    90% {
-      opacity: 0.15;
+    95% {
+      opacity: 1;
     }
     100% {
-      transform: translateY(100vh) rotateZ(360deg);
+      transform: translateY(100vh) rotateZ(720deg);
       opacity: 0;
     }
+  }
+  
+  .falling-cash {
+    position: absolute;
+    font-size: 40px;
+    top: -100px;
+    pointer-events: none;
+    animation: fallCash linear infinite;
+    text-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+    filter: drop-shadow(0 0 8px rgba(77, 255, 164, 0.3));
+    will-change: transform;
   }
   
   /* Smooth input animations */
