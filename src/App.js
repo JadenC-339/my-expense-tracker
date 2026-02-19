@@ -78,6 +78,8 @@ export default function App() {
   const [showBudgetModal, setShowBudgetModal] = useState(false);
   const [selectedBudgetCategory, setSelectedBudgetCategory] = useState("Groceries");
   const [budgetAmount, setBudgetAmount] = useState("");
+  const [isAddingNewCategory, setIsAddingNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
   const [sortBy, setSortBy] = useState("date-desc");
   const [hoveredCardId, setHoveredCardId] = useState(null);
   const [showCursor, setShowCursor] = useState(true);
@@ -150,6 +152,9 @@ export default function App() {
       setSelectedBudgetCategory(firstCategory);
       // Set the amount to existing budget or empty
       setBudgetAmount(budgets[firstCategory]?.toString() || "");
+      // Reset to select mode
+      setIsAddingNewCategory(false);
+      setNewCategoryName("");
     }
   }, [showBudgetModal, budgets]);
 
@@ -312,11 +317,28 @@ export default function App() {
       alert("Please enter a valid budget amount.");
       return;
     }
-    setBudgets((prev) => ({
-      ...prev,
-      [selectedBudgetCategory]: budgetVal,
-    }));
+
+    if (isAddingNewCategory) {
+      if (!newCategoryName.trim()) {
+        alert("Please enter a category name.");
+        return;
+      }
+      const trimmedName = newCategoryName.trim();
+      setBudgets((prev) => ({
+        ...prev,
+        [trimmedName]: budgetVal,
+      }));
+    } else {
+      setBudgets((prev) => ({
+        ...prev,
+        [selectedBudgetCategory]: budgetVal,
+      }));
+    }
+    
+    // Reset form
     setBudgetAmount("");
+    setNewCategoryName("");
+    setIsAddingNewCategory(false);
     setShowBudgetModal(false);
   };
 
@@ -973,24 +995,95 @@ export default function App() {
         <div style={styles.modal}>
           <div style={styles.modalContent}>
             <h2 style={styles.modalTitle}>Set Budget</h2>
-            <p style={{ fontSize: 12, color: "#888", marginBottom: "16px" }}>
-              {budgets[selectedBudgetCategory] ? "Edit existing budget" : "Add new budget"}
-            </p>
-            <select
-              style={styles.select}
-              className="flow-input"
-              value={selectedBudgetCategory}
-              onChange={(e) => {
-                setSelectedBudgetCategory(e.target.value);
-                setBudgetAmount(budgets[e.target.value]?.toString() || "");
-              }}
-            >
-              {[...EXPENSE_CATEGORIES, ...Object.keys(budgets)].filter((v, i, a) => a.indexOf(v) === i).map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat} {budgets[cat] ? `(₹${budgets[cat]})` : "(not set)"}
-                </option>
-              ))}
-            </select>
+            
+            {/* Toggle buttons to switch between add new and select existing */}
+            <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+              <button
+                onClick={() => {
+                  setIsAddingNewCategory(false);
+                  setNewCategoryName("");
+                  setSelectedBudgetCategory("Groceries");
+                  setBudgetAmount(budgets["Groceries"]?.toString() || "");
+                }}
+                style={{
+                  flex: 1,
+                  padding: "10px 14px",
+                  border: isAddingNewCategory ? "1px solid #22253a" : "1px solid #4dffa4",
+                  background: isAddingNewCategory ? "#13151d" : "rgba(77, 255, 164, 0.1)",
+                  color: isAddingNewCategory ? "#666" : "#4dffa4",
+                  cursor: "pointer",
+                  borderRadius: "8px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  transition: "all 0.3s ease",
+                }}
+                className="flow-btn"
+              >
+                Select Category
+              </button>
+              <button
+                onClick={() => {
+                  setIsAddingNewCategory(true);
+                  setNewCategoryName("");
+                  setBudgetAmount("");
+                }}
+                style={{
+                  flex: 1,
+                  padding: "10px 14px",
+                  border: isAddingNewCategory ? "1px solid #4dffa4" : "1px solid #22253a",
+                  background: isAddingNewCategory ? "rgba(77, 255, 164, 0.1)" : "#13151d",
+                  color: isAddingNewCategory ? "#4dffa4" : "#666",
+                  cursor: "pointer",
+                  borderRadius: "8px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  transition: "all 0.3s ease",
+                }}
+                className="flow-btn"
+              >
+                Add New Category
+              </button>
+            </div>
+
+            {/* Select existing category */}
+            {!isAddingNewCategory ? (
+              <>
+                <p style={{ fontSize: 12, color: "#888", marginBottom: "12px" }}>
+                  {budgets[selectedBudgetCategory] ? "Edit existing budget" : "Add budget for this category"}
+                </p>
+                <select
+                  style={styles.select}
+                  className="flow-input"
+                  value={selectedBudgetCategory}
+                  onChange={(e) => {
+                    setSelectedBudgetCategory(e.target.value);
+                    setBudgetAmount(budgets[e.target.value]?.toString() || "");
+                  }}
+                >
+                  {[...EXPENSE_CATEGORIES, ...Object.keys(budgets)].filter((v, i, a) => a.indexOf(v) === i).map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat} {budgets[cat] ? `(₹${budgets[cat]})` : "(not set)"}
+                    </option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <>
+                <p style={{ fontSize: 12, color: "#888", marginBottom: "12px" }}>
+                  Create a new budget category
+                </p>
+                <input
+                  style={styles.input}
+                  className="flow-input"
+                  type="text"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="Category name (e.g., Coffee, Books)"
+                  maxLength="30"
+                />
+              </>
+            )}
+
             <input
               style={styles.input}
               className="flow-input"
