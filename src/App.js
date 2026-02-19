@@ -300,34 +300,9 @@ export default function App() {
   return (
     <div style={styles.root}>
       <style>{css}</style>
-      
-      {/* Animated Background */}
-      <svg style={styles.animatedBg} viewBox="0 0 1200 800">
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <radialGradient id="grad1" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" style={{stopColor: '#4dffa4', stopOpacity: 0.8}} />
-            <stop offset="100%" style={{stopColor: '#4dffa4', stopOpacity: 0}} />
-          </radialGradient>
-          <radialGradient id="grad2" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" style={{stopColor: '#a3d8ff', stopOpacity: 0.6}} />
-            <stop offset="100%" style={{stopColor: '#a3d8ff', stopOpacity: 0}} />
-          </radialGradient>
-        </defs>
-        <circle cx="200" cy="150" r="120" fill="url(#grad1)" className="float-1" />
-        <circle cx="1000" cy="600" r="150" fill="url(#grad2)" className="float-2" />
-        <circle cx="600" cy="200" r="100" fill="url(#grad1)" className="float-3" style={{opacity: 0.4}} />
-        <circle cx="100" cy="700" r="80" fill="url(#grad2)" className="float-4" style={{opacity: 0.3}} />
-      </svg>
 
       {/* Header */}
-      <header style={{...styles.header, position: 'relative', zIndex: 1}}>
+      <header style={styles.header}>
         <div style={styles.headerContent}>
           <div style={styles.logoSection}>
             <div style={styles.logoMark}>💰</div>
@@ -366,7 +341,7 @@ export default function App() {
 
       {/* Dashboard Tab */}
       {activeTab === "dashboard" && (
-        <div style={{...styles.container, position: 'relative', zIndex: 1}}>
+        <div style={styles.container}>
           {/* Summary Cards */}
           <div style={styles.summaryGrid}>
             <div style={{ ...styles.card, ...styles.cardBalance }}>
@@ -464,7 +439,7 @@ export default function App() {
 
       {/* Form Tab */}
       {activeTab === "form" && (
-        <div style={{...styles.container, position: 'relative', zIndex: 1}}>
+        <div style={styles.container}>
           <div style={styles.formCard}>
             <h2 style={styles.formTitle}>{editingId ? "Edit Transaction" : "Add New Transaction"}</h2>
             {error && <div style={styles.error}>{error}</div>}
@@ -578,7 +553,7 @@ export default function App() {
 
       {/* Transactions Tab */}
       {activeTab === "transactions" && (
-        <div style={{...styles.container, position: 'relative', zIndex: 1}}>
+        <div style={styles.container}>
           {/* Filters */}
           <div style={styles.filterCard}>
             <h2 style={styles.sectionTitle}>Filters & Search</h2>
@@ -732,7 +707,7 @@ export default function App() {
 
       {/* Analytics Tab */}
       {activeTab === "analytics" && (
-        <div style={{...styles.container, position: 'relative', zIndex: 1}}>
+        <div style={styles.container}>
           <div style={styles.analyticsGrid}>
             <div style={styles.analyticsCard}>
               <h3 style={styles.analyticsTitle}>Monthly Overview</h3>
@@ -821,7 +796,7 @@ export default function App() {
 
       {/* Budgets Tab */}
       {activeTab === "budgets" && (
-        <div style={{...styles.container, position: 'relative', zIndex: 1}}>
+        <div style={styles.container}>
           <div style={styles.budgetPageCard}>
             <div style={styles.budgetPageHeader}>
               <h2 style={styles.sectionTitle}>Budget Management</h2>
@@ -927,22 +902,10 @@ export default function App() {
 const styles = {
   root: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #0d0f14 0%, #1a1d2e 50%, #0d0f14 100%)",
+    background: "#0d0f14",
     color: "#e8e6e1",
     fontFamily: "'DM Mono', 'Fira Mono', monospace",
     paddingBottom: 64,
-    position: "relative",
-    overflow: "hidden",
-  },
-  animatedBg: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    zIndex: 0,
-    pointerEvents: "none",
-    opacity: 0.3,
   },
   container: {
     maxWidth: 1200,
@@ -979,8 +942,6 @@ const styles = {
     background: "linear-gradient(90deg, #4dffa4, #fff)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
-    textShadow: "0 0 20px rgba(77, 255, 164, 0.3)",
-    animation: "neonGlow 3s ease-in-out infinite",
   },
   subtitle: {
     margin: "4px 0 0",
@@ -1044,8 +1005,6 @@ const styles = {
     flexDirection: "column",
     gap: 8,
     transition: "all 0.3s cubic-bezier(0.22,1,0.36,1)",
-    background: "rgba(19, 21, 29, 0.6)",
-    backdropFilter: "blur(10px)",
   },
   cardBalance: {
     background: "linear-gradient(135deg, #1a1d26 0%, #141720 100%)",
@@ -1094,9 +1053,8 @@ const styles = {
     gap: 16,
   },
   categoryCard: {
-    background: "rgba(19, 21, 29, 0.5)",
-    backdropFilter: "blur(8px)",
-    border: "1px solid rgba(77, 255, 164, 0.15)",
+    background: "#13151d",
+    border: "1px solid #22253a",
     borderRadius: 12,
     padding: "16px",
     transition: "all 0.3s cubic-bezier(0.22,1,0.36,1)",
@@ -1144,9 +1102,8 @@ const styles = {
     gap: 16,
   },
   budgetCard: {
-    background: "rgba(19, 21, 29, 0.5)",
-    backdropFilter: "blur(8px)",
-    border: "1px solid rgba(77, 255, 164, 0.15)",
+    background: "#13151d",
+    border: "1px solid #22253a",
     borderRadius: 12,
     padding: "16px",
     transition: "all 0.3s cubic-bezier(0.22,1,0.36,1)",
@@ -1162,9 +1119,8 @@ const styles = {
     fontWeight: 600,
   },
   formCard: {
-    background: "rgba(19, 21, 29, 0.6)",
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(77, 255, 164, 0.1)",
+    background: "#13151d",
+    border: "1px solid #22253a",
     borderRadius: 20,
     padding: "32px",
     maxWidth: 800,
@@ -1270,9 +1226,8 @@ const styles = {
     marginBottom: 16,
   },
   filterCard: {
-    background: "rgba(19, 21, 29, 0.6)",
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(77, 255, 164, 0.1)",
+    background: "#13151d",
+    border: "1px solid #22253a",
     borderRadius: 20,
     padding: "24px",
     marginBottom: 24,
@@ -1292,9 +1247,8 @@ const styles = {
     color: "#666",
   },
   listCard: {
-    background: "rgba(19, 21, 29, 0.6)",
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(77, 255, 164, 0.1)",
+    background: "#13151d",
+    border: "1px solid #22253a",
     borderRadius: 20,
     padding: "24px",
     transition: "all 0.3s cubic-bezier(0.22,1,0.36,1)",
@@ -1464,9 +1418,8 @@ const styles = {
     gap: 24,
   },
   analyticsCard: {
-    background: "rgba(19, 21, 29, 0.6)",
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(77, 255, 164, 0.1)",
+    background: "#13151d",
+    border: "1px solid #22253a",
     borderRadius: 16,
     padding: "24px",
     transition: "all 0.3s cubic-bezier(0.22,1,0.36,1)",
@@ -1490,9 +1443,8 @@ const styles = {
     borderBottom: "1px solid #1e2130",
   },
   budgetPageCard: {
-    background: "rgba(19, 21, 29, 0.6)",
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(77, 255, 164, 0.1)",
+    background: "#13151d",
+    border: "1px solid #22253a",
     borderRadius: 20,
     padding: "24px",
   },
@@ -1508,9 +1460,8 @@ const styles = {
     gap: 16,
   },
   budgetListItem: {
-    background: "rgba(13, 15, 20, 0.7)",
-    backdropFilter: "blur(5px)",
-    border: "1px solid rgba(77, 255, 164, 0.08)",
+    background: "#0d0f14",
+    border: "1px solid #22253a",
     borderRadius: 12,
     padding: "16px",
     transition: "all 0.3s cubic-bezier(0.22,1,0.36,1)",
@@ -1549,9 +1500,8 @@ const styles = {
     zIndex: 1000,
   },
   modalContent: {
-    background: "rgba(19, 21, 29, 0.8)",
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(77, 255, 164, 0.2)",
+    background: "#13151d",
+    border: "1px solid #22253a",
     borderRadius: 16,
     padding: "32px",
     maxWidth: 400,
@@ -1849,125 +1799,6 @@ const css = `
   div[style*="background: #4dffa4"][style*="height: 100%"] {
     animation: progressFill 0.8s ease-out;
   }
-  
-  /* ═══ FLOATING ANIMATIONS ═══ */
-  @keyframes float-1 {
-    0%, 100% { transform: translateY(0) translateX(0); }
-    25% { transform: translateY(-30px) translateX(10px); }
-    50% { transform: translateY(-60px) translateX(-10px); }
-    75% { transform: translateY(-30px) translateX(15px); }
-  }
-  
-  @keyframes float-2 {
-    0%, 100% { transform: translateY(0) translateX(0); }
-    33% { transform: translateY(-40px) translateX(-20px); }
-    66% { transform: translateY(-20px) translateX(20px); }
-  }
-  
-  @keyframes float-3 {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-50px); }
-  }
-  
-  @keyframes float-4 {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-35px) rotate(180deg); }
-  }
-  
-  .float-1 { animation: float-1 15s ease-in-out infinite; }
-  .float-2 { animation: float-2 18s ease-in-out infinite; animation-delay: -2s; }
-  .float-3 { animation: float-3 20s ease-in-out infinite; animation-delay: -4s; }
-  .float-4 { animation: float-4 16s ease-in-out infinite; animation-delay: -6s; }
-  
-  /* ═══ NEON GLOW EFFECT ═══ */
-  @keyframes neonGlow {
-    0%, 100% { 
-      text-shadow: 0 0 10px rgba(77, 255, 164, 0.5), 0 0 20px rgba(77, 255, 164, 0.3);
-      box-shadow: 0 0 15px rgba(77, 255, 164, 0.3);
-    }
-    50% {
-      text-shadow: 0 0 20px rgba(77, 255, 164, 0.8), 0 0 40px rgba(77, 255, 164, 0.5);
-      box-shadow: 0 0 25px rgba(77, 255, 164, 0.5);
-    }
-  }
-  
-  .neon-glow {
-    animation: neonGlow 3s ease-in-out infinite;
-  }
-  
-  /* ═══ GLASSMORPHISM ═══ */
-  .glass {
-    background: rgba(19, 21, 29, 0.7) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(77, 255, 164, 0.1) !important;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
-  }
-  
-  .glass:hover {
-    background: rgba(19, 21, 29, 0.85) !important;
-    border-color: rgba(77, 255, 164, 0.3) !important;
-    box-shadow: 0 8px 32px 0 rgba(77, 255, 164, 0.2) !important;
-  }
-  
-  /* ═══ GRADIENT ANIMATION ═══ */
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  
-  .gradient-animate {
-    background-size: 400% 400%;
-    animation: gradientShift 8s ease infinite;
-  }
-  
-  /* ═══ BLUR ENTRANCE ═══ */
-  @keyframes blurIn {
-    from {
-      opacity: 0;
-      filter: blur(10px);
-    }
-    to {
-      opacity: 1;
-      filter: blur(0);
-    }
-  }
-  
-  /* ═══ TAB INDICATOR ═══ */
-  @keyframes tabIndicator {
-    from {
-      opacity: 0;
-      transform: scaleX(0);
-    }
-    to {
-      opacity: 1;
-      transform: scaleX(1);
-    }
-  }
-  
-  /* ═══ ENHANCED FOCUS ═══ */
-  .flow-input:focus {
-    box-shadow: 0 0 0 3px rgba(77, 255, 164, 0.1), 0 0 20px rgba(77, 255, 164, 0.3) !important;
-    transform: scale(1.02);
-  }
-  
-  /* ═══ RIPPLE EFFECT ON BUTTONS ═══ */
-  .flow-btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-  
-  .flow-btn:hover::before {
-    width: 300px;
-    height: 300px;
-  }
 `;
+
 
