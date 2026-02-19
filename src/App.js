@@ -1,15 +1,12 @@
-import { useState, useEffect } from "react";
-import ExpenseTracker from './expense-tracker';
-export default function App() {
-  return <ExpenseTracker />;
-}
+import { useState } from "react";
+
 const initialTransactions = [
   { id: 1, description: "Monthly Salary", amount: 5000, type: "income" },
   { id: 2, description: "Rent", amount: 1500, type: "expense" },
   { id: 3, description: "Groceries", amount: 320, type: "expense" },
 ];
 
-export default function ExpenseTracker() {
+export default function App() {
   const [transactions, setTransactions] = useState(initialTransactions);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
