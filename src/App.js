@@ -531,6 +531,7 @@ const css = `
   .flow-input:focus { border-color: #4dffa4 !important; }
   .flow-btn:hover { opacity: 0.88; transform: translateY(-1px); }
   .flow-btn:active { transform: translateY(0); }
+  .flow-btn:disabled { opacity: 0.5; cursor: not-allowed !important; transform: none !important; }
   .flow-del:hover { background: #ff8fa330 !important; transform: scale(1.1); }
   .flow-item:hover { border-color: #2e3248 !important; }
   @keyframes flowEnter {
