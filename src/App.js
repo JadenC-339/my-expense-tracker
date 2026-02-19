@@ -293,7 +293,6 @@ export default function App() {
   };
 
   const categoryBudgetBreakdown = getCategoryBreakdown();
-  const allCategories = [...new Set(transactions.map((t) => t.category))];
 
   return (
     <div style={styles.root}>
