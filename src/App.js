@@ -142,6 +142,16 @@ export default function App() {
     localStorage.setItem("budgets", JSON.stringify(budgets));
   }, [budgets]);
 
+  // Reset budget form when modal opens
+  useEffect(() => {
+    if (showBudgetModal) {
+      // Set the category to the first available category
+      const firstCategory = EXPENSE_CATEGORIES[0];
+      setSelectedBudgetCategory(firstCategory);
+      // Set the amount to existing budget or empty
+      setBudgetAmount(budgets[firstCategory]?.toString() || "");
+    }
+  }, [showBudgetModal, budgets]);
 
   // Calculate totals
   const totalIncome = transactions
@@ -963,6 +973,9 @@ export default function App() {
         <div style={styles.modal}>
           <div style={styles.modalContent}>
             <h2 style={styles.modalTitle}>Set Budget</h2>
+            <p style={{ fontSize: 12, color: "#888", marginBottom: "16px" }}>
+              {budgets[selectedBudgetCategory] ? "Edit existing budget" : "Add new budget"}
+            </p>
             <select
               style={styles.select}
               className="flow-input"
@@ -974,7 +987,7 @@ export default function App() {
             >
               {[...EXPENSE_CATEGORIES, ...Object.keys(budgets)].filter((v, i, a) => a.indexOf(v) === i).map((cat) => (
                 <option key={cat} value={cat}>
-                  {cat}
+                  {cat} {budgets[cat] ? `(₹${budgets[cat]})` : "(not set)"}
                 </option>
               ))}
             </select>
