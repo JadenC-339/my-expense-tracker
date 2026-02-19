@@ -103,11 +103,14 @@ export default function App() {
 
   const balance = totalIncome - totalExpenses;
 
-  // Get current month transactions
-  const currentMonth = new Date().toLocaleString("default", { month: "numeric", year: "numeric" });
+  // Get current month transactions - Fixed comparison logic
+  const today = new Date();
+  const currentMonthNum = String(today.getMonth() + 1).padStart(2, '0');
+  const currentYearNum = today.getFullYear();
+  
   const currentMonthTransactions = transactions.filter((t) => {
     const [year, month] = t.date.split("-").slice(0, 2);
-    return `${month}/${year}` === `${currentMonth.split("/").reverse().join("/")}`;
+    return year === String(currentYearNum) && month === currentMonthNum;
   });
 
   const currentMonthIncome = currentMonthTransactions
@@ -293,7 +296,6 @@ export default function App() {
   };
 
   const categoryBudgetBreakdown = getCategoryBreakdown();
-  const allCategories = [...new Set(transactions.map((t) => t.category))];
 
   return (
     <div style={styles.root}>
