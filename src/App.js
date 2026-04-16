@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
+const API_URL = "http://localhost:5000/api/expenses";
+
 // Category Icons/Emojis
 const CATEGORY_ICONS = {
   "Groceries": "🛒",
@@ -49,10 +51,7 @@ const BUDGET_DEFAULTS = {
 
 export default function App() {
   // State Management
-  const [transactions, setTransactions] = useState(() => {
-    const saved = localStorage.getItem("transactions");
-    return saved ? JSON.parse(saved) : initialTransactions;
-  });
+  const [transactions, setTransactions] = useState([]);
 
   const [budgets, setBudgets] = useState(() => {
     const saved = localStorage.getItem("budgets");
@@ -134,10 +133,19 @@ export default function App() {
     };
   }, [showCursor]);
 
-  // Save to localStorage when transactions change
+  // Fetch transactions from MongoDB on mount
   useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions));
-  }, [transactions]);
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        setTransactions(data);
+      } catch (err) {
+        console.error("Error fetching transactions:", err);
+      }
+    };
+    fetchTransactions();
+  }, []);
 
   // Save to localStorage when budgets change
   useEffect(() => {
@@ -253,25 +261,37 @@ export default function App() {
 
     setError("");
     
+    const transactionData = { description: description.trim(), amount: parsed, type, category, date, notes, isRecurring };
+
     if (editingId) {
       // Edit existing transaction
-      setTransactions((prev) =>
-        prev.map((t) =>
-          t.id === editingId
-            ? { ...t, description: description.trim(), amount: parsed, type, category, date, notes, isRecurring }
-            : t
-        )
-      );
-      setEditingId(null);
+      fetch(`${API_URL}/${editingId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(transactionData),
+      })
+        .then(res => res.json())
+        .then(updatedTransaction => {
+          setTransactions((prev) =>
+            prev.map((t) => (t._id || t.id) === editingId ? updatedTransaction : t)
+          );
+          setEditingId(null);
+        })
+        .catch(err => setError("Failed to update transaction."));
     } else {
       // Add new transaction
-      const newId = Date.now();
-      setTransactions((prev) => [
-        { id: newId, description: description.trim(), amount: parsed, type, category, date, notes, isRecurring },
-        ...prev,
-      ]);
-      setAnimateId(newId);
-      setTimeout(() => setAnimateId(null), 600);
+      fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(transactionData),
+      })
+        .then(res => res.json())
+        .then(newTransaction => {
+          setTransactions((prev) => [newTransaction, ...prev]);
+          setAnimateId(newTransaction._id);
+          setTimeout(() => setAnimateId(null), 600);
+        })
+        .catch(err => setError("Failed to add transaction."));
     }
 
     // Reset form
@@ -292,12 +312,16 @@ export default function App() {
     setDate(transaction.date);
     setNotes(transaction.notes);
     setIsRecurring(transaction.isRecurring);
-    setEditingId(transaction.id);
+    setEditingId(transaction._id || transaction.id);
     setActiveTab("form");
   };
 
   const handleDelete = (id) => {
-    setTransactions((prev) => prev.filter((t) => t.id !== id));
+    fetch(`${API_URL}/${id}`, { method: "DELETE" })
+      .then(() => {
+        setTransactions((prev) => prev.filter((t) => (t._id || t.id) !== id));
+      })
+      .catch(err => console.error("Failed to delete transaction."));
   };
 
   const handleCancelEdit = () => {
@@ -777,13 +801,13 @@ export default function App() {
               <ul style={styles.list}>
                 {filteredTransactions.map((t) => (
                   <li
-                    key={t.id}
+                    key={t._id || t.id}
                     style={{
                       ...styles.item,
-                      ...(hoveredCardId === t.id ? styles.itemHovered : {}),
+                      ...(hoveredCardId === (t._id || t.id) ? styles.itemHovered : {}),
                     }}
-                    className={`flow-item ${animateId === t.id ? "flow-enter" : ""}`}
-                    onMouseEnter={() => setHoveredCardId(t.id)}
+                    className={`flow-item ${animateId === (t._id || t.id) ? "flow-enter" : ""}`}
+                    onMouseEnter={() => setHoveredCardId(t._id || t.id)}
                     onMouseLeave={() => setHoveredCardId(null)}
                   >
                     <div style={styles.itemContent}>
@@ -827,7 +851,7 @@ export default function App() {
                         <button
                           style={styles.deleteBtn}
                           className="flow-del smooth-btn"
-                          onClick={() => handleDelete(t.id)}
+                          onClick={() => handleDelete(t._id || t.id)}
                           title="Delete"
                         >
                           ×
