@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 
-const API_URL = "http://localhost:5000/api/expenses";
+const API_URL = window.location.hostname === "localhost" 
+  ? "http://localhost:5000/api/expenses"
+  : "/api/expenses";
 
 // Category Icons/Emojis
 const CATEGORY_ICONS = {
@@ -285,13 +287,22 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(transactionData),
       })
-        .then(res => res.json())
+        .then(async (res) => {
+          const text = await res.text();
+          try {
+            const data = JSON.parse(text);
+            if (!res.ok) throw new Error(data.error || "Server Error");
+            return data;
+          } catch (e) {
+            throw new Error(text.substring(0, 50));
+          }
+        })
         .then(newTransaction => {
           setTransactions((prev) => [newTransaction, ...prev]);
           setAnimateId(newTransaction._id);
           setTimeout(() => setAnimateId(null), 600);
         })
-        .catch(err => setError("Failed to add transaction."));
+        .catch(err => setError("Failed to add: " + err.message));
     }
 
     // Reset form
