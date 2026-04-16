@@ -2,7 +2,7 @@
   "name": "my-expense-tracker",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://jadenc-339.github.io/my-expense-tracker",
+  "homepage": ".",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
