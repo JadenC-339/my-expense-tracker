@@ -181,7 +181,7 @@ export default function App() {
   const today = new Date();
   const currentMonthNum = String(today.getMonth() + 1).padStart(2, '0');
   const currentYearNum = today.getFullYear();
-  
+
   const currentMonthTransactions = transactions.filter((t) => {
     const [year, month] = t.date.split("-").slice(0, 2);
     return year === String(currentYearNum) && month === currentMonthNum;
@@ -225,7 +225,7 @@ export default function App() {
     const matchesDateEnd = !dateRangeEnd || t.date <= dateRangeEnd;
     return matchesSearch && matchesCategory && matchesType && matchesDateStart && matchesDateEnd;
   }).sort((a, b) => {
-    switch(sortBy) {
+    switch (sortBy) {
       case "date-desc":
         return new Date(b.date) - new Date(a.date);
       case "date-asc":
@@ -260,7 +260,7 @@ export default function App() {
     }
 
     setError("");
-    
+
     const transactionData = { description: description.trim(), amount: parsed, type, category, date, notes, isRecurring };
 
     if (editingId) {
@@ -358,7 +358,7 @@ export default function App() {
         [selectedBudgetCategory]: budgetVal,
       }));
     }
-    
+
     // Reset form
     setBudgetAmount("");
     setNewCategoryName("");
@@ -1019,7 +1019,7 @@ export default function App() {
         <div style={styles.modal}>
           <div style={styles.modalContent}>
             <h2 style={styles.modalTitle}>Set Budget</h2>
-            
+
             {/* Toggle buttons to switch between add new and select existing */}
             <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
               <button

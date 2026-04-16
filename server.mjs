@@ -40,8 +40,18 @@ const Expense = mongoose.model('Expense', expenseSchema);
 
 // ─── Routes ─────────────────────────────────────────────────────────────────
 
-// Root route - API status
-app.get('/', (req, res) => {
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ─── Serve Frontend ─────────────────────────────────────────────────────────
+// Serve static files from the React build directory
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Root route - API status (accessible specifically at /api)
+app.get('/api', (req, res) => {
   res.send('🚀 Expense Tracker API is running. Access endpoints at /api/expenses');
 });
 
@@ -94,6 +104,12 @@ app.put('/api/expenses/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// All other requests get sent to the React frontend
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) return res.status(404).json({ error: 'API route not found' });
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 // ─── Start Server ────────────────────────────────────────────────────────────
